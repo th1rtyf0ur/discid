@@ -6,7 +6,7 @@ Requires MusicBrainz::DiscID perl module ('apt install libmusicbrainz-discid-per
 Usage: discid album.log
 
 Example:
-
+```
 $ discid The\ Wake.log 
 T1 PreGap: 00:02:00 (150)
 ARGS: 1, 252176, 150, 25251, 59903, 86922, 110584, 145162, 172985, 196354
@@ -17,7 +17,7 @@ Album: The Wake
 DiscID: Jt3K9ovZCtDpzw1TfesHuRnlWIc-
 Submit: 
 http://musicbrainz.org/cdtoc/attach?id=Jt3K9ovZCtDpzw1TfesHuRnlWIc-&tracks=8&toc=1+8+252176+150+25251+59903+86922+110584+145162+172985+196354&filter-release.query=The+Wake
-
+```
 
 result: https://musicbrainz.org/cdtoc/Jt3K9ovZCtDpzw1TfesHuRnlWIc-
 
