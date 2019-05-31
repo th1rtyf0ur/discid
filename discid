@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+
+use MusicBrainz::DiscID;
+my $d = MusicBrainz::DiscID->new();
+my $log = $ARGV[0];
+die "Usage: $0 disc.log\n" unless (-f $log);
+open LOG, $log;
+my @offsets, $first, $last, $sectors, $pregap, $album;
+while (<LOG>) {
+	chomp;
+	$album ||= $1 if (/^(?:.+) \/ (.+)$/);
+	$pregap ||= $1 if (/Pre-gap length : (\d\d:\d\d:\d\d)$/);
+	next unless (/\d+:\d+:\d+ \| \d+:\d+:\d+ \|/);
+	my ($track, $s, $l, $ss, $es) = split(/\|/);
+	$track +=0;
+	$ss+=0;
+	$es+=0;
+	$first ||= $track;
+	$last = $track;
+	$sectors = $es;
+	push(@offsets, $ss);
+}
+$sectors += 1;
+#print "ARGS: $first, $sectors, ".join(", ", @offsets)."\n";
+#$d->put($first, $sectors, @offsets);
+my ($m, $s, $f) = ($1, $2, $3) if ($pregap =~ /(\d\d):(\d\d):(\d\d)/);
+my $pgoffset = ($m * 60 * 75) + ($s * 75) + $f;
+print "T1 PreGap: $pregap ($pgoffset)\n";
+foreach my $i (0..$#offsets) { $offsets[$i] += $pgoffset; }
+$sectors += $pgoffset;
+
+print "ARGS: $first, $sectors, ".join(", ", @offsets)."\n";
+$d->put($first, $sectors, @offsets);
+print "First: ".$d->first_track_num()."\n";
+print "Last : ".$d->last_track_num()."\n";
+print "Sectors:".$d->sectors()."\n";
+print "Album: $album\n";
+print "DiscID: ".$d->id()."\n";
+$album =~ s/ \[Disc \d\]//;
+$album =~ s/ /+/g;
+print "Submit: \n".$d->submission_url()."\&filter-release.query=$album\n";
